@@ -18,8 +18,10 @@ import java.util.Set;
 import static java.util.Set.of;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -98,5 +100,59 @@ class OwnerControllerTest {
 
         verify(ownerService).findById(eq(1L));
     }
+
+    @Test
+    @SneakyThrows
+    void initCreationForm() {
+        mockMvc.perform(get("/owners/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("owners/createOrUpdateOwnerForm"))
+                .andExpect(model().attributeExists("owner"));
+
+        verifyNoInteractions(ownerService);
+    }
+
+    @Test
+    @SneakyThrows
+    void processCreationForm() {
+
+        when(ownerService.save(any())).thenReturn(Owner.builder().id(1L).build());
+
+        mockMvc.perform(post("/owners/new"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/owners/1"))
+                .andExpect(model().attributeExists("owner"));
+
+        verify(ownerService).save(any());
+    }
+
+    @Test
+    @SneakyThrows
+    void initUpdateForm() {
+
+        when(ownerService.findById(eq(1L))).thenReturn(Owner.builder().id(1L).build());
+
+        mockMvc.perform(get("/owners/1/edit"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("owners/createOrUpdateOwnerForm"))
+                .andExpect(model().attributeExists("owner"));
+
+        verify(ownerService).findById(eq(1L));
+    }
+
+    @Test
+    @SneakyThrows
+    void processUpdateForm() {
+
+        when(ownerService.save(any())).thenReturn(Owner.builder().id(1L).build());
+
+        mockMvc.perform(post("/owners/1/edit"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/owners/1"))
+                .andExpect(model().attributeExists("owner"));
+
+        verify(ownerService).save(any());
+    }
+
 
 }
