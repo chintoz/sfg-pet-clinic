@@ -42,4 +42,14 @@ public class Owner extends Person {
     @OneToMany(cascade = ALL, mappedBy = "owner")
     private Set<Pet> pets = new HashSet<>();
 
+    public Pet getPet(String name) {
+        return getPet(name, false);
+    }
+
+    public Pet getPet(String name, boolean ignoreNew) {
+        String lowerName = name.toLowerCase();
+        return pets.stream().filter(p -> !ignoreNew || !p.isNew())
+                .filter(p -> p.getName().equals(lowerName)).findFirst().orElse(null);
+    }
+
 }
