@@ -7,18 +7,20 @@
 </head>
 <body>
     <!--/*@thymesVar is="vet" type="guru.springframework.sfgpetclinic.model.Vet"*/-->
-    <h2 th:text="'List of Vets'">List of Vets ..</h2>
-    <table class="table table-striped">
+    <!--/*@thymesVar is="vets" type="java.util.Set<guru.springframework.sfgpetclinic.model.Vet>"*/-->
+    <!--/*@thymesVar is="speciality" type="guru.springframework.sfgpetclinic.model.Speciality"*/-->
+    <h2>Veterinarians</h2>
+    <table id="vets" class="table table-striped">
         <thead>
-        <th>Id</th>
-        <th>First Name</th>
-        <th>Last Name</th>
+            <th>Name</th>
+            <th>Specialities</th>
         </thead>
         <tbody>
-        <tr th:each="vet:${vets}">
-            <td th:text="${vet.id}">1</td>
-            <td th:text="${vet.firstName}">Joe</td>
-            <td th:text="${vet.lastName}">Buck</td>
+        <tr th:each="vet: ${vets}">
+            <td th:text="${vet.firstName + ' ' + vet.lastName}">Jhon Doe</td>
+            <td><span th:each="speciality:${vet.specialities}" th:text="${speciality.description + ' '}"/>
+                      <span th:if="${vet?.specialities?.size() == 0}">none</span>
+            </td>
         </tr>
         </tbody>
     </table>
